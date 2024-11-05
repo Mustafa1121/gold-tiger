@@ -1,0 +1,40 @@
+{
+  "name": "shabab_news_api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx prisma generate --schema=./src/database/schema.prisma && node ./src/server.js",
+    "start:dev": "nodemon ./src/server.js",
+    "prisma:migrate:generate:dev": "npx prisma migrate dev --schema=./src/database/schema.prisma && npx prisma generate --schema=./src/database/schema.prisma",
+    "prisma:studio": "npx prisma studio --schema=./src/database/schema.prisma",
+    "build": "npm install",
+    "prisma:migrate:deploy": "npx prisma migrate deploy --schema=./src/database/schema.prisma"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "prisma": "^5.17.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.17.0",
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.4.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "cuid": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "express-validator": "^7.1.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.14",
+    "shabab_news_api": "file:",
+    "winston": "^3.13.1"
+  }
+}

@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+}
+
+// Address model
+model Address {
+  id         Int     @id @default(autoincrement())
+  postCode   Int?
+  stateId    Int?
+  city       String?
+  suburb     String?
+  longitude  Decimal?
+  latitude   Decimal?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  branches   Branch[]
+  drivers    Driver[]
+  employees  Employee[]
+}
+
+// Branch model
+model Branch {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  addressId   Int
+  address     Address  @relation(fields: [addressId], references: [id])
+  drivers     Driver[]
+  employees   Employee[]
+  consignments Consignment[]
+  runsheets   Runsheet[]
+  vehicles    Vehicle[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Consignment model
+model Consignment {
+  id                Int      @id @default(autoincrement())
+  consignmentNo     String   @unique
+  customerId        Int
+  runsheetId        Int?
+  sourceId          Int
+  destinationId     Int
+  timeIn            DateTime?
+  timeOut           DateTime?
+  customerSignature String?
+  priority          Int?
+  description       String?
+  statusId          Int
+  typeId            Int
+  addedBy           Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  customer          Customer @relation(fields: [customerId], references: [id])
+
+  Branch Branch[]
+}
+
+// Customer model
+model Customer {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  phoneNumber  String
+  email        String
+  consignments Consignment[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Driver model
+model Driver {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  phoneNumber  String   @unique
+  branchId     Int
+  firstName    String
+  lastName     String
+  addressId    Int?
+  email        String?
+  signature    String?
+  currentStatusId Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  branch       Branch   @relation(fields: [branchId], references: [id])
+  address      Address? @relation(fields: [addressId], references: [id])
+  user        User @relation(fields: [userId], references: [id])
+
+  Runsheet Runsheet[]
+}
+
+// Employee model
+model Employee {
+  id         Int     @id @default(autoincrement())
+  userId     Int     @unique
+  email      String?
+  branchId   Int
+  firstName  String
+  lastName   String
+  addressId  Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user        User @relation(fields: [userId], references: [id])
+  branch     Branch   @relation(fields: [branchId], references: [id])
+  address    Address? @relation(fields: [addressId], references: [id])
+}
+
+// Runsheet model
+model Runsheet {
+  id            Int     @id @default(autoincrement())
+  driverId      Int?
+  vehicleId     Int?
+  vehicleSafety Boolean?
+  driverSafety  Boolean?
+  startTime     DateTime?
+  finishTime    DateTime?
+  restTime      DateTime?
+  fuelAdded     Decimal?
+  statusId      Int
+  addedBy       Int
+  driverSignature String?
+  branchId      Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  branch        Branch   @relation(fields: [branchId], references: [id])
+  driver        Driver?  @relation(fields: [driverId], references: [id])
+  vehicle       Vehicle? @relation(fields: [vehicleId], references: [id])
+}
+
+// User model
+model User {
+  id           Int     @id @default(autoincrement())
+  username     String  @unique
+  password     String
+  typeId       Int
+  isFirstLogin Boolean
+  statusId     Int
+  addedBy      Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  type         UserType @relation(fields: [typeId], references: [id])
+
+  Employee Employee[]
+
+  Driver Driver[]
+}
+
+// UserType model
+model UserType {
+  id           Int     @id @default(autoincrement())
+  name         String  @unique
+  users        User[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Vehicle model
+model Vehicle {
+  id            Int     @id @default(autoincrement())
+  plateNumber   String  @unique
+  branchId      Int
+  statusId      Int
+  vehicleTypeId Int
+  currentStatusId Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  branch        Branch   @relation(fields: [branchId], references: [id])
+  vehicleType   VehicleType @relation(fields: [vehicleTypeId], references: [id])
+
+  Runsheet Runsheet[]
+}
+
+// VehicleType model
+model VehicleType {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  vehicles     Vehicle[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
